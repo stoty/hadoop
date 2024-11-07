@@ -19,6 +19,7 @@ package org.apache.hadoop.security;
 
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
+import org.apache.hadoop.conf.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,14 +32,23 @@ public class SaslConstants {
   public static final Logger LOG = LoggerFactory.getLogger(SaslConstants.class);
 
   private static final String SASL_MECHANISM_ENV = "HADOOP_SASL_MECHANISM";
+  private static final String SASL_MECHANISM_PROPERTY = "hadoop.sasl.mechanism";
   public static final String SASL_MECHANISM;
   public static final String SASL_MECHANISM_DEFAULT = "DIGEST-MD5";
 
   static {
-    final String mechanism = System.getenv(SASL_MECHANISM_ENV);
-    LOG.debug("{} = {} (env)", SASL_MECHANISM_ENV, mechanism);
-    SASL_MECHANISM = mechanism != null? mechanism : SASL_MECHANISM_DEFAULT;
-    LOG.debug("{} = {} (effective)", SASL_MECHANISM_ENV, SASL_MECHANISM);
+	final Configuration conf = new Configuration();
+	final String mechanismFromProperty = conf.get("hadoop.sasl.mechanism");
+    LOG.debug("{} = {} (Configuration)", SASL_MECHANISM_PROPERTY, mechanismFromProperty);
+	if (mechanismFromProperty != null) {
+		SASL_MECHANISM = mechanismFromProperty;
+	    LOG.debug("{} = {} (effective)", SASL_MECHANISM_ENV, SASL_MECHANISM);
+	} else {
+	    final String mechanismFromEnvironment = System.getenv(SASL_MECHANISM_ENV);
+	    LOG.debug("{} = {} (env)", SASL_MECHANISM_ENV, mechanismFromEnvironment);
+	    SASL_MECHANISM = mechanismFromEnvironment != null? mechanismFromEnvironment : SASL_MECHANISM_DEFAULT;
+	    LOG.debug("{} = {} (effective)", SASL_MECHANISM_ENV, SASL_MECHANISM);
+	}
   }
 
   private SaslConstants() {}
