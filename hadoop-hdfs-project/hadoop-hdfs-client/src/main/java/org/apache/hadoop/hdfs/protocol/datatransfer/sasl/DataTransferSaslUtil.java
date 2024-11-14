@@ -104,7 +104,17 @@ public final class DataTransferSaslUtil {
     String negotiatedQop = sasl.getNegotiatedQop();
     LOG.debug("{}: Verifying QOP: requested = {}, negotiated = {}",
         sasl, requestedQop, negotiatedQop);
-    if (negotiatedQop != null && !requestedQop.contains(negotiatedQop)) {
+    if (negotiatedQop == null) {
+      if (!requestedQop.isEmpty() && !requestedQop.equals(ImmutableSet.of("auth"))) {
+        // Even though the RFC does not explicitly require the Mechanism to report the
+        // Negotiated QOP, Hadoop absolutely requires it for encryption to work.
+        throw new IOException(String.format("SASL handshake completed, but " +
+            "channel did not report quality of protection, even though integrity " +
+            " and/or confidentality was requested " +
+            "requested = %s, negotiated = %s", requestedQop, negotiatedQop));
+      }
+      // We didn't get a negotiated QOP, but we did not ask for any security either.
+    } else if (!requestedQop.contains(negotiatedQop)) {
       throw new IOException(String.format("SASL handshake completed, but " +
           "channel does not have acceptable quality of protection, " +
           "requested = %s, negotiated = %s", requestedQop, negotiatedQop));
