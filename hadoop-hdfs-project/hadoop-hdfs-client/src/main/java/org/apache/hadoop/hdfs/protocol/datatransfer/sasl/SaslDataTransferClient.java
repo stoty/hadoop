@@ -315,8 +315,7 @@ public class SaslDataTransferClient {
       Token<BlockTokenIdentifier> accessToken,
       SecretKey secretKey)
       throws IOException {
-    Map<String, String> saslProps = createSaslPropertiesForEncryption(
-        encryptionKey.encryptionAlgorithm);
+    Map<String, String> saslProps = createSaslPropertiesForEncryption();
     if (secretKey != null) {
       LOG.debug("DataNode overwriting downstream QOP" +
           saslProps.get(Sasl.QOP));

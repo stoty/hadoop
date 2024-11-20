@@ -112,7 +112,7 @@ public final class DataTransferSaslUtil {
     if (!requestedQop.contains(negotiatedQop)) {
       throw new IOException(String.format("SASL handshake completed, but " +
           "channel does not have acceptable quality of protection, " +
-          "requested = %s, negotiated = %s", requestedQop, negotiatedQop));
+          "requested = %s, negotiated(effective) = %s", requestedQop, negotiatedQop));
     }
   }
 
@@ -135,12 +135,11 @@ public final class DataTransferSaslUtil {
    * @param encryptionAlgorithm to use for SASL negotation
    * @return properties of encrypted SASL negotiation
    */
-  public static Map<String, String> createSaslPropertiesForEncryption(
-      String encryptionAlgorithm) {
-    Map<String, String> saslProps = Maps.newHashMapWithExpectedSize(3);
-    saslProps.put(Sasl.QOP, QualityOfProtection.PRIVACY.getSaslQop());
+  public static Map<String, String> createSaslPropertiesForEncryption() {
+    Map<String, String> saslProps = Maps.newHashMapWithExpectedSize(2);
+    // This is equivalent to not setting QOP, but the rest of Hadoop expects this to be set
+    saslProps.put(Sasl.QOP, QualityOfProtection.AUTHENTICATION.getSaslQop());
     saslProps.put(Sasl.SERVER_AUTH, "true");
-    saslProps.put("com.sun.security.sasl.digest.cipher", encryptionAlgorithm);
     return saslProps;
   }
 

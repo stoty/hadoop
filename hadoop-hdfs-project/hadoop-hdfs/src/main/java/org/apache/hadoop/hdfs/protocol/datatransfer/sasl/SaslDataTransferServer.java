@@ -173,8 +173,7 @@ public class SaslDataTransferServer {
       return new IOStreamPair(underlyingIn, underlyingOut);
     }
 
-    Map<String, String> saslProps = createSaslPropertiesForEncryption(
-      dnConf.getEncryptionAlgorithm());
+    Map<String, String> saslProps = createSaslPropertiesForEncryption();
 
     if (LOG.isDebugEnabled()) {
       LOG.debug("Server using encryption algorithm " +
