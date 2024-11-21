@@ -112,7 +112,7 @@ public final class DataTransferSaslUtil {
     if (!requestedQop.contains(negotiatedQop)) {
       throw new IOException(String.format("SASL handshake completed, but " +
           "channel does not have acceptable quality of protection, " +
-          "requested = %s, negotiated = %s", requestedQop, negotiatedQop));
+          "requested = %s, negotiated(effective) = %s", requestedQop, negotiatedQop));
     }
   }
 
