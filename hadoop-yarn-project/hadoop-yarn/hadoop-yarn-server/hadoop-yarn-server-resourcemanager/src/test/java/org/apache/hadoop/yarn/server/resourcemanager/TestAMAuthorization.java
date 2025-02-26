@@ -21,11 +21,11 @@ package org.apache.hadoop.yarn.server.resourcemanager;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.security.PrivilegedAction;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -305,9 +305,9 @@ public class TestAMAuthorization {
           credentials.getAllTokens());
     currentUser.addToken(amRMToken);
     ApplicationMasterProtocol client = currentUser
-        .doAs(new PrivilegedAction<ApplicationMasterProtocol>() {
+        .callAsNoException(new Callable<ApplicationMasterProtocol>() {
           @Override
-          public ApplicationMasterProtocol run() {
+          public ApplicationMasterProtocol call() {
             return (ApplicationMasterProtocol) rpc.getProxy(ApplicationMasterProtocol.class, rm
               .getApplicationMasterService().getBindAddress(), conf);
           }
@@ -361,9 +361,9 @@ public class TestAMAuthorization {
 
     // First try contacting NM without tokens
     ApplicationMasterProtocol client = currentUser
-        .doAs(new PrivilegedAction<ApplicationMasterProtocol>() {
+        .callAsNoException(new Callable<ApplicationMasterProtocol>() {
           @Override
-          public ApplicationMasterProtocol run() {
+          public ApplicationMasterProtocol call() {
             return (ApplicationMasterProtocol) rpc.getProxy(ApplicationMasterProtocol.class,
                 serviceAddr, conf);
           }

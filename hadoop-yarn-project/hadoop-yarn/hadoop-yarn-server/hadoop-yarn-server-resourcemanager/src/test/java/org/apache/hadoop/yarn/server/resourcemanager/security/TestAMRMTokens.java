@@ -26,9 +26,9 @@ import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.security.PrivilegedAction;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
@@ -432,9 +432,9 @@ public class TestAMRMTokens {
   private ApplicationMasterProtocol createRMClient(final MockRM rm,
       final Configuration conf, final YarnRPC rpc,
       UserGroupInformation currentUser) {
-    return currentUser.doAs(new PrivilegedAction<ApplicationMasterProtocol>() {
+    return currentUser.callAsNoException(new Callable<ApplicationMasterProtocol>() {
       @Override
-      public ApplicationMasterProtocol run() {
+      public ApplicationMasterProtocol call() {
         return (ApplicationMasterProtocol) rpc.getProxy(ApplicationMasterProtocol.class, rm
           .getApplicationMasterService().getBindAddress(), conf);
       }
